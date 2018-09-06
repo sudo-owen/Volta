@@ -46,4 +46,5 @@ index_template = env.get_template('index.html')
 index_html_content = index_template.render(posts = 
 	[POSTS[post] for post in POSTS])
 
-print(index_html_content)
+with open('../Muse/index.html', 'w') as file:
+	file.write(index_html_content)
