@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Dots</title>
+  </head>
+
+  <body>
+
+		{% for post in posts %}
+    <div class="post">
+      <div class="top-bar">
+        <div class="title">
+					<a href="{{'#' + post.anchor}}">{{post.title}}</a>
+				</div>
+        <div class="date">{{post.date}}</div>
+      </div>
+      <div class="body">
+        {{post.content}}
+      </div>
+    </div>
+		{% endfor %}
+
+  </body>
+
+</html>
