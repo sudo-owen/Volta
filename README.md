@@ -1,3 +1,4 @@
 # Volta
-A static (heh) site generator in Python.
-Write markdown files in the content directory, and then run publish.sh to push your changes.
+
+### Intro
+Volta is my attempt at writing a static site generator. If you want something polished in Python, I would suggest [Pelican](https://github.com/getpelican/pelican).
