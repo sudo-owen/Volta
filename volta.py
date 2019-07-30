@@ -64,9 +64,21 @@ def extract_text(text):
 
 
 def get_file_index():
-  with open(CONFIG['METADATA_DIR'] + CONFIG['FILE_INDEX'], 'r') as infile:
-    FILE_INDEX = json.load(infile)
-    return FILE_INDEX
+  FILE_INDEX_PATH = CONFIG['METADATA_DIR'] + CONFIG['FILE_INDEX']
+  try:
+    with open(FILE_INDEX_PATH, 'r') as infile:
+      FILE_INDEX = json.load(infile)
+      return FILE_INDEX
+  except EnvironmentError:
+    ans = input(FILE_INDEX_PATH + ' not found. Create new file index? (Y/N)')
+    if ans.lower() == 'y':
+      new_index = {}
+      with open(FILE_INDEX_PATH, 'w') as outfile:
+        json.dump(new_index, outfile, indent=4)
+      print('Created ' + FILE_INDEX_PATH)
+    else:
+      print('Exiting...')
+      sys.exit(0)
 
 
 
@@ -198,7 +210,7 @@ def update_pages():
 
 
 
-def updateTime():
+def update_time():
   CONFIG['LAST_UPDATED'] = time.time()
   with open(CONFIG_PATH, 'w') as infile:
       json.dump(CONFIG, infile, indent=4)

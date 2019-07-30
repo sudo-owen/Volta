@@ -1,1 +1,0 @@
-/home/owen/program_files/anaconda3/lib/python3.6/copy.py
