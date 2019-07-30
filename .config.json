@@ -1,0 +1,12 @@
+{
+    "CONTENTS_DIR": "contents/",
+    "METADATA_DIR": "metadata/",
+    "FILE_INDEX": "FILE_INDEX.json",
+    "OUTPUT_DIR": "output/",
+    "PAGE_DIR": "page/",
+    "TEMPLATE_DIR": "templates/",
+    "POST_PATH": "post.html",
+    "INDEX_PATH": "index.html",
+    "PAGE_PATH": "page.html",
+    "LAST_UPDATED": 0
+}
