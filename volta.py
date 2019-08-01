@@ -25,6 +25,7 @@ def check_config():
     if ans.lower() == 'y':
       init_config()
       print('Created .config.json')
+      check_config()
     else:
       print('Exiting...')
       sys.exit(0)
@@ -33,9 +34,9 @@ def check_config():
 
 def init_config():
   default_config = {
+    "FILE_INDEX": "FILE_INDEX.json",
     "CONTENTS_DIR": "contents/",
     "METADATA_DIR": "metadata/",
-    "FILE_INDEX": "FILE_INDEX.json",
     "OUTPUT_DIR": "output/",
     "PAGE_DIR": "page/",
     "TEMPLATE_DIR": "templates/",
@@ -47,6 +48,28 @@ def init_config():
   }
   with open(".config.json", 'w') as outfile:
     json.dump(default_config, outfile, indent=4)
+
+
+
+def get_contents():
+  c = {
+    "POST": {
+      "CONTENTS": CONFIG['CONTENTS_DIR'],
+      "OUTPUT": CONFIG['OUTPUT_DIR'],
+      "FILE_INDEX": os.path.join(CONFIG['METADATA_DIR'], CONFIG['POST_PATH'])
+    },
+    "PAGE": {
+      "CONTENTS": os.path.join(CONFIG['CONTENTS_DIR'], CONFIG['PAGE_DIR']),
+      "OUTPUT": os.path.join(CONFIG['OUTPUT_DIR'], CONFIG['PAGE_DIR']),
+      "FILE_INDEX": os.path.join(CONFIG['METADATA_DIR'], 'POSTS_INDEX')
+    },
+    "INDEX": {
+      "PATH": os.path.join(CONFIG['CONTENTS_DIR'], 'index.html'),
+      "OUTPUT": os.path.join(CONFIG['OUTPUT_DIR'], 'index.html'),
+      "FILE_INDEX": os.path.join(CONFIG['METADATA_DIR'], CONFIG['POST_PATH'])
+    }
+  }
+  return c
 
 
 
@@ -63,27 +86,27 @@ def extract_text(text):
 
 
 
-def get_file_index():
-  FILE_INDEX_PATH = CONFIG['METADATA_DIR'] + CONFIG['FILE_INDEX']
+def get_file_index(index_path):
   try:
-    with open(FILE_INDEX_PATH, 'r') as infile:
+    with open(index_path, 'r') as infile:
       FILE_INDEX = json.load(infile)
       return FILE_INDEX
   except EnvironmentError:
-    ans = input(FILE_INDEX_PATH + ' not found. Create new file index? (Y/N)')
+    ans = input(index_path + ' not found. Create new file index? (Y/N)')
     if ans.lower() == 'y':
       new_index = {}
-      with open(FILE_INDEX_PATH, 'w') as outfile:
+      with open(index_path, 'w') as outfile:
         json.dump(new_index, outfile, indent=4)
-      print('Created ' + FILE_INDEX_PATH)
+      print('Created ' + index_path)
+      get_file_index(index_path)
     else:
       print('Exiting...')
       sys.exit(0)
 
 
 
-def parse_posts(input_dir, output_dir, template_path, parse_all=False):
-  FILE_INDEX = get_file_index()
+def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=False):
+  FILE_INDEX = get_file_index(index_path)
   NOT_IN_FILE_INDEX = set([k for k in FILE_INDEX])
   for post in os.listdir(input_dir):
     file_path = os.path.join(input_dir, post)
@@ -93,15 +116,13 @@ def parse_posts(input_dir, output_dir, template_path, parse_all=False):
     # Skip subdirectories:
     if os.path.isdir(file_path):
         continue
-
     if (parse_all or file_update > CONFIG["LAST_UPDATED"]):
-
       # Remove the old HTML file if it exists:
       try:
         os.remove(os.path.join(output_dir, FILE_INDEX[post_id]['anchor']))
       except EnvironmentError:
         pass
-
+      # Begin parsing the file
       with open(file_path, 'r+') as f:
         p = f.read()
         post_body = extract_text(p)
@@ -152,16 +173,8 @@ def parse_posts(input_dir, output_dir, template_path, parse_all=False):
   # Remove obsolete keys and update FILE_INDEX
   for obsolete_key in NOT_IN_FILE_INDEX:
       FILE_INDEX.pop(obsolete_key)
-  with open(CONFIG['METADATA_DIR'] + CONFIG['FILE_INDEX'], 'w') as outfile:
+  with open(index_path, 'w') as outfile:
     json.dump(FILE_INDEX, outfile, indent=4)
-
-
-
-def parse_index(output_dir, template_path):
-  FILE_INDEX = get_file_index()
-  output_path = os.path.join(output_dir, 'index.html')
-  render_HTML(output_path, FILE_INDEX, template_path)
-  print('Updated index.html')
 
 
 
@@ -173,7 +186,8 @@ def render_HTML(output_path, data, template_path):
 
 
 
-def update(input_path, output_path, template_path):
+def update(input_path, output_path, template_path, index_path):
+  # Check if template has been updated
   if int(os.path.getmtime(template_path)) > CONFIG["LAST_UPDATED"]:
     for post in os.listdir(output_path):
         file_path = os.path.join(output_path, post)
@@ -186,33 +200,28 @@ def update(input_path, output_path, template_path):
   else:
     parse_all = False
   # Rebuild either all posts or some posts
-  parse_posts(input_path, output_path, template_path, parse_all=parse_all)
+  parse_posts(input_path, output_path, template_path, index_path, parse_all=parse_all)
 
 
 
-def update_posts():
-  contents = CONFIG['OUTPUT_DIR']
-  output = CONFIG['OUTPUT_DIR']
-  template = os.path.join(CONFIG['TEMPLATE_DIR'], CONFIG['POST_PATH'])
-  update(contents, output, template)
-
-
-
-def update_pages():
-  # Check if page template has been updated
-  contents = os.path.join(CONFIG['CONTENTS_DIR'], CONFIG['PAGE_DIR'])
-  output = os.path.join(CONFIG['OUTPUT_DIR'], CONFIG['PAGE_DIR'])
-  template = os.path.join(CONFIG['TEMPLATE_DIR'], CONFIG["PAGE_PATH"])
-  update(contents, output, template)
+def update_contents():
+  contents = get_contents()
+  for c in contents:
+    update(c["CONTENTS"], c["OUTPUT"], c["TEMPLATE"], c["FILE_INDEX"])
 
 
 
 def update_index():
+  c = get_contents()["INDEX"]
   # Check if index template has been updated
   index_template_path = os.path.join(CONFIG['TEMPLATE_DIR'], CONFIG["INDEX_PATH"])
   if int(os.path.getmtime(index_template_path)) > CONFIG["LAST_UPDATED"]:
     os.remove(os.path.join(CONFIG['OUTPUT_DIR'], 'index.html'))
-    parse_index(CONFIG['OUTPUT_DIR'], index_template_path)
+    # Build the index page
+    FILE_INDEX = get_file_index(c["FILE_INDEX"])
+    output_path = os.path.join(c["OUTPUT_DIR"], 'index.html')
+    render_HTML(output_path, FILE_INDEX, c["TEMPLATE_PATH"])
+    print('Updated index.html')
 
 
 
@@ -225,7 +234,6 @@ def update_time():
 
 if __name__ == '__main__':
   check_config()
-  update_posts()
+  update_contents()
   update_index()
-  update_pages()
   update_time()
