@@ -8,11 +8,11 @@
   {% for p in data|dictsort('last_updated', reverse=true) %}
   <div class="post-link">
     <div class="post-title">
-      <a href="{{ './%s.html'%p.anchor }}">{{ p.title }}</a>
+      <a href="{{ './%s.html'%p[1].anchor }}">{{ p[1].title }}</a>
     </div>
-    <div class="word-count">{{ p.word_count }} words</div>
-    <div class="post-summary">{{ p.summary }}</div>
-    <div class="last-updated">Last Updated: {{ p.last_updated }}</div>
+    <div class="word-count">{{ p[1].word_count }} words</div>
+    <div class="post-summary">{{ p[1].summary }}</div>
+    <div class="last-updated">Last Updated: {{ p[1].date }}</div>
   </div>
   {% endfor %}
 {% endblock content %}

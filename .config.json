@@ -4,12 +4,13 @@
     "OUTPUT_DIR": "output/",
     "PAGE_DIR": "page/",
     "TEMPLATES_DIR": "templates/",
+    "BASE_PATH": "base.html",
     "POST_PATH": "post.html",
     "INDEX_PATH": "index.html",
     "PAGE_PATH": "page.html",
     "POST_INDEX": "POST_INDEX.json",
     "PAGE_INDEX": "PAGE_INDEX.json",
-    "LAST_UPDATED": 1564783716.882983,
+    "LAST_UPDATED": 1564786162.5028014,
     "MAX_SUMMARY_LENGTH": 150,
     "TITLE": "test"
 }

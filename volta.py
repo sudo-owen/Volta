@@ -41,6 +41,7 @@ def init_config(title):
     "OUTPUT_DIR": "output/",
     "PAGE_DIR": "page/",
     "TEMPLATES_DIR": "templates/",
+    "BASE_PATH": "base.html",
     "POST_PATH": "post.html",
     "INDEX_PATH": "index.html",
     "PAGE_PATH": "page.html",
@@ -61,19 +62,26 @@ def get_paths():
       "CONTENTS": CONFIG['CONTENTS_DIR'],
       "OUTPUT": CONFIG['OUTPUT_DIR'],
       "FILE_INDEX": os.path.join(CONFIG['METADATA_DIR'], CONFIG['POST_INDEX']),
-      "TEMPLATE": os.path.join(CONFIG['TEMPLATES_DIR'], CONFIG['POST_PATH'])
+      "TEMPLATE": os.path.join(CONFIG['TEMPLATES_DIR'], CONFIG['POST_PATH']),
+      "parse": True
     },
     "PAGE": {
       "CONTENTS": os.path.join(CONFIG['CONTENTS_DIR'], CONFIG['PAGE_DIR']),
       "OUTPUT": os.path.join(CONFIG['OUTPUT_DIR'], CONFIG['PAGE_DIR']),
       "FILE_INDEX": os.path.join(CONFIG['METADATA_DIR'], CONFIG['PAGE_INDEX']),
       "TEMPLATE": os.path.join(CONFIG['TEMPLATES_DIR'], CONFIG['PAGE_PATH']),
+      "parse": True
     },
     "INDEX": {
       "PATH": os.path.join(CONFIG['CONTENTS_DIR'], CONFIG['INDEX_PATH']),
       "OUTPUT": os.path.join(CONFIG['OUTPUT_DIR'], CONFIG['INDEX_PATH']),
       "FILE_INDEX": os.path.join(CONFIG['METADATA_DIR'], CONFIG['POST_INDEX']),
-      "TEMPLATE": os.path.join(CONFIG['TEMPLATES_DIR'], CONFIG['INDEX_PATH'])
+      "TEMPLATE": os.path.join(CONFIG['TEMPLATES_DIR'], CONFIG['INDEX_PATH']),
+      "parse": False
+    },
+    "BASE": {
+      "TEMPLATE": os.path.join(CONFIG['TEMPLATES_DIR'], CONFIG['BASE_PATH']),
+      "parse": False
     }
   }
   return paths
@@ -194,9 +202,17 @@ def render_HTML(output_path, template_path, data):
 
 
 
+def need_to_update(template_path):
+  # Either the specified template or the base template has been updated since last run
+  return (int(os.path.getmtime(template_path)) > CONFIG["LAST_UPDATED"] or
+    int(os.path.getmtime(get_paths()["BASE"]["TEMPLATE"])) > CONFIG["LAST_UPDATED"]
+  )
+
+
+
 def update(input_path, output_path, template_path, index_path):
   # Check if template has been updated
-  if int(os.path.getmtime(template_path)) > CONFIG["LAST_UPDATED"]:
+  if need_to_update(template_path):
     print(template_path + ' has been updated since last run. Updating all posts in ' + input_path)
     for post in os.listdir(output_path):
         file_path = os.path.join(output_path, post)
@@ -216,8 +232,8 @@ def update(input_path, output_path, template_path, index_path):
 def update_contents():
   contents = get_paths()
   for k in contents.keys():
-    if k != "INDEX":
-      c = contents[k]
+    c = contents[k]
+    if c["parse"]:
       update(c["CONTENTS"], c["OUTPUT"], c["TEMPLATE"], c["FILE_INDEX"])
 
 
@@ -225,8 +241,7 @@ def update_contents():
 def update_index():
   c = get_paths()["INDEX"]
   # Check if index template has been updated
-  index_template_path = c["TEMPLATE"]
-  if int(os.path.getmtime(index_template_path)) > CONFIG["LAST_UPDATED"]:
+  if need_to_update(c["TEMPLATE"]):
     # Remove old index
     try: 
       os.remove(c["OUTPUT"])

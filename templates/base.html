@@ -26,15 +26,18 @@
     /* For normal computer width */
     @media only screen and (min-width: 1200px) {
       .content {
-        width: 65%;
+        max-width: 42rem;
       }
     }
   </style>
 </head>
 
 <body>
+  
   {% block top_bar %}
+  {{ title }}
   {% endblock top_bar %}
+
   <div class="grid">
     <div class="grid_spacer"></div>
     <!-- Block for content -->
