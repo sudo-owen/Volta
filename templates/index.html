@@ -1,0 +1,18 @@
+{% extends "templates/base.html" %}
+
+{% block head %}
+<title>{{ title }}</title>
+{% endblock head %}
+
+{% block content %}
+  {% for p in data|dictsort('last_updated', reverse=true) %}
+  <div class="post-link">
+    <div class="post-title">
+      <a href="{{ './%s.html'%p.anchor }}">{{ p.title }}</a>
+    </div>
+    <div class="word-count">{{ p.word_count }} words</div>
+    <div class="post-summary">{{ p.summary }}</div>
+    <div class="last-updated">Last Updated: {{ p.last_updated }}</div>
+  </div>
+  {% endfor %}
+{% endblock content %}
