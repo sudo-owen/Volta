@@ -1,0 +1,29 @@
+.content{
+  font-size: 1.35rem;
+  line-height: 1.75rem;
+}
+
+@media only screen and (min-width: 1200px) {
+  .content{
+    font-size: 1.2rem;
+  }
+}
+
+.post-title, .date {
+  text-align: center;
+}
+.post-title {
+  font-size: 2.0rem;
+  font-weight: bold;
+  line-height: 1.25;
+  color: rgb(10, 10, 10);
+  padding-top: 0.5rem;
+}
+.date {
+  font-size: 1.0rem;
+  color: rgb(135, 32, 64);
+  font-weight: bold;
+}
+.content {
+  padding-bottom: 2rem;
+}

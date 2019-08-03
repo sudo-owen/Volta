@@ -15,6 +15,7 @@
   .content {
     margin: auto;
     width: 100%;
+    font-family: Hind, Arial, Helvetica, sans-serif;
   }
   /* For tablets and above */
   @media only screen and (min-width: 700px) {
@@ -29,13 +30,37 @@
       max-width: 42rem;
     }
   }
+
+  /* Title stylings */
+  .title {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  /* Link stylings */
+  a {
+    color: rgb(135, 32, 64);
+  }
+  a:hover {
+    color: rgb(198, 77, 115);
+  }
+
+  /* Highlight stylings */
+  ::selection {
+    background: #77080D; /* WebKit/Blink Browsers */
+    color: white;
+  }
+  ::-moz-selection {
+    background: #77080D; /* Gecko Browsers */
+    color: white;
+  }
   </style>
 </head>
 
 <body>
   
   {% block top_bar %}
-  {{ title }}
+  <div class="title">{{ title }}</div>
   {% endblock top_bar %}
 
   <div class="grid">

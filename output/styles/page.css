@@ -1,0 +1,13 @@
+.page-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 1.25;
+  color: rgb(10, 10, 10);
+  padding-top: 0.5rem;
+}
+
+.content{
+  font-size: 1.35rem;
+  line-height: 1.75rem;
+}

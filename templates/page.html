@@ -5,7 +5,10 @@
 <link rel="stylesheet" href="../styles/page.css">
 {% endblock head %}
 
+{% block top_bar %}
+{% endblock top_bar %}
+
 {% block content %}
-<div class="title">{{ data.title }}</div>
+<div class="page-title">{{ data.title }}</div>
 <div class="content">{{ data.content }}</div>
 {% endblock content %}
