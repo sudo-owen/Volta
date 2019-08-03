@@ -107,16 +107,12 @@ def get_file_index(index_path):
       FILE_INDEX = json.load(infile)
       return FILE_INDEX
   except EnvironmentError:
-    ans = input(index_path + ' not found. Create new file index? (Y/N)')
-    if ans.lower() == 'y':
-      new_index = {}
-      with open(index_path, 'w') as outfile:
-        json.dump(new_index, outfile, indent=4)
-      print('Created ' + index_path)
-      return get_file_index(index_path)
-    else:
-      print('Exiting...')
-      sys.exit(0)
+    print(index_path + ' not found, creating new ' + index_path)
+    new_index = {}
+    with open(index_path, 'w') as outfile:
+      json.dump(new_index, outfile, indent=4)
+    print('Created ' + index_path)
+    return get_file_index(index_path)
 
 
 
