@@ -213,7 +213,7 @@ def need_to_update(template_path):
 def update(input_path, output_path, template_path, index_path):
   # Check if template has been updated
   if need_to_update(template_path):
-    print(template_path + ' has been updated since last run. Updating all posts in ' + input_path)
+    print(template_path + ' has been updated since last run. Updating all files in ' + input_path)
     for post in os.listdir(output_path):
         file_path = os.path.join(output_path, post)
         # Skip subdirectories:
