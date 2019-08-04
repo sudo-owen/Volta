@@ -38,5 +38,23 @@ Here is what the `.config.json` file uses:
   }
 ```
 
+Each blog post object has optional metadata that you can add to the beginning of the file in the form of:
+
+```
+# blog_post.md
+title: A title
+anchor: The generated HTML slug
+summary: Summary which is displayed on index.html
+YOUR CONTENT GOES HERE
+```
+
+If you just want to start writing, Volta will use the following default values for the above metadata:
+
+- `title`: Name of the parsed `.md` file.
+- `anchor`: Escaped name of the parsed `.md` file, with spaces swapped for hyphens.
+- `summary`: First `MAX_SUMMARY_LENGTH` characters of the file.
+
+Other information, like `last_updated` and `word_count` are auto-generated.
+
 If anything goes wrong, or if you just want to rebuild the whole site, you can tell Volta to re-parse all files with the `-r` flag:
 `python -r volta.py`
