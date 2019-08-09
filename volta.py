@@ -138,7 +138,7 @@ def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=Fals
       with open(file_path, 'r+') as f:
         p = f.read()
         post_body = extract_text(p)
-        parsed_file = markdown(p, extras=['metadata'])
+        parsed_file = markdown(p, extras=['metadata', 'smarty-pants'])
         post_metadata = {
           'title': None,
           'anchor': None,
