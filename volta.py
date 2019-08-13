@@ -162,7 +162,7 @@ def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=Fals
         try:
           post_metadata['anchor'] = parsed_file.metadata['anchor']
         except KeyError:
-          post_metadata['anchor'] = quote(post_metadata['title'].replace(' ', '-'))
+          post_metadata['anchor'] = post_id
         try:
           post_metadata['summary'] = parsed_file.metadata['summary']
         except KeyError:
