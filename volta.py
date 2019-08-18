@@ -123,10 +123,13 @@ def get_file_index(index_path):
 
 def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=False):
   FILE_INDEX = get_file_index(index_path)
+ 
+  post_id_list = []
   for post in os.listdir(input_dir):
     file_path = os.path.join(input_dir, post)
     file_update = int(os.path.getmtime(file_path))
     post_id = str(os.stat(file_path).st_ino) + str(os.stat(file_path).st_dev)
+    post_id_list.append(post_id)
 
     # Skip subdirectories:
     if os.path.isdir(file_path):
@@ -150,7 +153,8 @@ def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=Fals
           'word_count': None,
           'date': datetime.fromtimestamp(
           file_update).strftime('%Y-%m-%d %H:%M'),
-          'last_updated': file_update
+          'last_updated': file_update,
+          'file_name': None
         }
 
         # Add post attributes
@@ -168,6 +172,7 @@ def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=Fals
         except KeyError:
           post_metadata['summary'] = post_body[0:CONFIG["MAX_SUMMARY_LENGTH"]] + '...'
         post_metadata['word_count'] = len(post_body.split(' '))
+        post_metadata['file_name'] = post # Record the post name in the metadata for future deletion checks
         
         # Add to FILE_INDEX (either overwriting or adding a new entry)
         FILE_INDEX[post_id] = post_metadata
@@ -178,6 +183,12 @@ def parse_posts(input_dir, output_dir, template_path, index_path, parse_all=Fals
         # Create HTML file
         render_HTML(html_path, template_path, data)
         print("Updated: ", data['title'])
+  
+    # Delete any posts that don't have a corresponding .md file anymore. 
+    index_keys_copy = list(FILE_INDEX.keys()).copy()
+    for post_id in index_keys_copy : 
+      if post_id not in post_id_list : 
+        del FILE_INDEX[post_id]
 
   with open(index_path, 'w') as outfile:
     json.dump(FILE_INDEX, outfile, indent=4)
@@ -220,6 +231,7 @@ def update(input_path, output_path, template_path, index_path):
 
 
 def update_contents():
+  # Updates Pages and Posts (not index or templates)
   contents = get_paths()
   for k in contents.keys():
     c = contents[k]
