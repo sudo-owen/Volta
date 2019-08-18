@@ -57,4 +57,4 @@ If you just want to start writing, Volta will use the following default values f
 Other information, like `last_updated` and `word_count` are auto-generated.
 
 If anything goes wrong, or if you just want to rebuild the whole site, you can tell Volta to re-parse all files with the `-r` flag:
-`python -r volta.py`
+`python volta.py -r`
